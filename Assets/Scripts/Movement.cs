@@ -25,6 +25,7 @@ public class Movement : MonoBehaviour {
     private Vector3 velocity = Vector3.zero;
     private float horizontalMovement;
     private float verticalMovement;
+    private int currentBonusJump = 0;
 
     private void Awake() {
         if (instance) {
@@ -41,11 +42,16 @@ public class Movement : MonoBehaviour {
     }
 
     void Update() {
+        if (isGrounded && currentBonusJump > 0) {
+            currentBonusJump = 0;            
+        }
+    
         horizontalMovement = Input.GetAxis("Horizontal") * moveSpeed * Time.fixedDeltaTime;
         verticalMovement = Input.GetAxis("Vertical") * climbSpeed * Time.fixedDeltaTime;
 
-        if (Input.GetButtonDown("Jump") && isGrounded && !isClimbing) {
+        if (Input.GetButtonDown("Jump") && (isGrounded || Inventory.instance.jumpCount > currentBonusJump) && !isClimbing) {
             isJumping = true;
+            if (!isGrounded) currentBonusJump++;
         }
 
         Flip(rb.velocity.x);

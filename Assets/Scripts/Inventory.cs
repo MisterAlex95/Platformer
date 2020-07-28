@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     public int coinsCount;
+    public int jumpCount;
     
     public static Inventory instance;
     public Text coinsCountText;
@@ -19,6 +20,14 @@ public class Inventory : MonoBehaviour
     public void AddCoins(int _count) {
         coinsCount += _count;
         coinsCountText.text = coinsCount.ToString();
+    }
+
+    public void AddJump(int _count) {
+        jumpCount += _count;
+    }
+
+    public void RemoveJump(int _count) {
+        jumpCount -= _count;
     }
 
     public void RemoveCoins(int _count) {
