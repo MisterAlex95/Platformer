@@ -5,6 +5,10 @@ public class Movement : MonoBehaviour {
     public float climbSpeed;
     public float jumpForce;
 
+    public float fireRate = .5f;
+    private float nextFire = 0; 
+    private Vector2 fireballPos;
+
     [HideInInspector]
     public bool isJumping = false;
     [HideInInspector]
@@ -21,11 +25,13 @@ public class Movement : MonoBehaviour {
     public SpriteRenderer spriteRenderer;
     public Rigidbody2D rb;
     public CapsuleCollider2D playerCollider;
+    public GameObject fireball;
     
     private Vector3 velocity = Vector3.zero;
     private float horizontalMovement;
     private float verticalMovement;
-    private int currentBonusJump = 0;
+    private int currentBonusJump;
+    private bool isFacingRight;
 
     private void Awake() {
         if (instance) {
@@ -54,6 +60,11 @@ public class Movement : MonoBehaviour {
             if (!isGrounded) currentBonusJump++;
         }
 
+        if (Input.GetKeyDown(KeyCode.F) && Time.time > nextFire) {
+            nextFire = Time.time + fireRate;
+            Fireball();
+        }
+
         Flip(rb.velocity.x);
 
         float characterVelocity = Mathf.Abs(rb.velocity.x);
@@ -78,11 +89,29 @@ public class Movement : MonoBehaviour {
 
     void Flip(float _velocity) {
         if (_velocity > 0.1f) {
+            isFacingRight = true;
             spriteRenderer.flipX = false;
         } else if (_velocity < -0.1f) {
+            isFacingRight = false;
             spriteRenderer.flipX = true;
         }
     } 
+
+    void Fireball() {
+        float direction = 0;
+        fireballPos = transform.position;
+
+        if (isFacingRight) {
+            fireballPos += new Vector2(1f, -.5f);
+            direction = 5;
+        } else {
+            fireballPos += new Vector2(-1f, -.5f);
+            direction = -5;
+        }
+
+        GameObject fireballGO = Instantiate(fireball, fireballPos, Quaternion.identity);
+        fireballGO.GetComponent<Fireball>().velocityX = direction;
+    }
 
     private void OnDrawGizmos() {
         Gizmos.color = Color.red;
